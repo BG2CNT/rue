@@ -10,30 +10,32 @@ void SetObjectCameraLimits(int *sX, int *sY, int width, int height){
 }
 
 
-void UpdateSpriteAnim(Object16_Insider_AnimationConfig* anim){
-    if(anim->stopped) return;
-    switch(anim->Anim_Type){
+void UpdateSpriteAnim(Object16_Insider_AnimationConfig* AnimationHandler){
+    if(AnimationHandler->stopped) return;
+    switch(AnimationHandler->Anim_Type){
         case ANIM_NORMAL: // NORMAL.
-            anim->Frame += anim->Speed;
-            if(anim->Frame > anim->Max_Frame) anim->Frame= anim->Min_Frame << 8;
+            AnimationHandler->Frame += AnimationHandler->Speed;
+            if(AnimationHandler->Frame > AnimationHandler->Max_Frame) {
+                AnimationHandler->Frame = AnimationHandler->Min_Frame << 8;
+            }
         break;
         case ANIM_UPDOWN: // UPDOWN.
-            anim->Frame += (anim->inner_workings.animbool ?- anim->Speed : anim->Speed);
+            AnimationHandler->Frame += (AnimationHandler->inner_workings.animbool ?- AnimationHandler->Speed : AnimationHandler->Speed);
 
-            if(anim->Frame >= (anim->Max_Frame) ) anim->inner_workings.animbool = true;
-            else if(anim->Frame <= (anim->Min_Frame) )anim->inner_workings.animbool = false;
+            if(AnimationHandler->Frame >= (AnimationHandler->Max_Frame)) AnimationHandler->inner_workings.animbool = true;
+            else if(AnimationHandler->Frame <= (AnimationHandler->Min_Frame))AnimationHandler->inner_workings.animbool = false;
         break;
     }
 }
 
 
-void SpriteStartAnim(u8 animtype, u16 startframe, u16 endframe, u8 speed, Object16_Insider_AnimationConfig* animconfig){
-    animconfig->Frame = startframe << 8;
-    animconfig->Min_Frame = startframe << 8;
-    animconfig->Max_Frame = endframe << 8;
-    animconfig->Speed = speed;
+void SpriteStartAnim(u8 AnimType, u16 StartFrame, u16 EndFrame, u8 Speed, Object16_Insider_AnimationConfig* AnimationHandler){
+    AnimationHandler->Frame = StartFrame << 8;
+    AnimationHandler->Min_Frame = StartFrame << 8;
+    AnimationHandler->Max_Frame = EndFrame << 8;
+    AnimationHandler->Speed = Speed;
 
-    animconfig->Anim_Type = animtype;
-    animconfig->inner_workings.animbool = false;
-    animconfig->stopped = false;
+    AnimationHandler->Anim_Type = AnimType;
+    AnimationHandler->inner_workings.animbool = false;
+    AnimationHandler->stopped = false;
 }

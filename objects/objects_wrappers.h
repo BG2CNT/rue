@@ -7,6 +7,18 @@
 #define ANIM_NORMAL 1
 #define ANIM_UPDOWN 2
 
+
+typedef struct{
+    int X, Y; // Coordinates.
+    int sX, sY; // Screen coordinates.
+    int vY, vX; // Speed.
+} Object_Position;
+
+/*
+    Animation handler, please do not touch :P
+
+    Use with the animation functions.
+*/
 class Object16_Insider_AnimationConfig {
     public:
         /*
@@ -30,19 +42,27 @@ class Object16_Insider_AnimationConfig {
 
     @param anim Pointer to animation handler.
 */
-void UpdateSpriteAnim(Object16_Insider_AnimationConfig* anim);
+void UpdateSpriteAnim(Object16_Insider_AnimationConfig* AnimationHandler);
 
 /*
-    Starts sprite animation for any Object16 that is compatible, needs to call ``UpdateSpriteAnim`` to work.
+    Starts sprite animation for any Object that is compatible, needs to call ``UpdateSpriteAnim`` to work.
 
     @param animtype Type of animation, these are ``ANIM_NORMAL`` and ``ANIM_UPDOWN``
     @param startframe The first frame of the animation.
     @param endframe The last frame of the animation.
     @param speed Speed in fixed point.
-    @param aniconfig Pointer to animation handler.
+    @param AnimationHandler Pointer to animation handler.
 */
-void SpriteStartAnim(u8 animtype, u16 startframe, u16 endframe, u8 speed, Object16_Insider_AnimationConfig* animconfig);
+void SpriteStartAnim(u8 AnimType, u16 StartFrame, u16 EndFrame, u8 Speed, Object16_Insider_AnimationConfig* AnimationHandler);
 
+/*
+    Stops sprite animation for any object that is compatible...
+    @param AnimationHandler pointer to animation handler.
+*/
+static inline void StopSpriteAnim(Object16_Insider_AnimationConfig* AnimationHandler){
+    AnimationHandler->Anim_Type = 0;
+    AnimationHandler->Frame = 0;
+}
 
 /*
     Sets sX limits on sprite so that it doesn't wrap around the screen.

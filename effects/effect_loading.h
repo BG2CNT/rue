@@ -1,6 +1,5 @@
 #include <nf_lib.h>
-#include "../objects/objects_player.h"
-
+#include "../player/objects_player.h"
 #ifndef EFFECT_LOADING_H
 #define EFFECT_LOADING_H
 

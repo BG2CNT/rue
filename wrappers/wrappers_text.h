@@ -47,5 +47,7 @@ void Colored_Text(u8 screen, u8 layer, u16 x, u16 y, const char* text, bool vbl 
 */
 void TypeWriterEffect(int screen, u32 layer, u32 x, u32 y, const char* string);
 
-
+static inline void ClearTextRow(int screen, u32 layer, u32 y){
+    NF_WriteText(screen, layer, 0, y, "                               ");
+}
 #endif

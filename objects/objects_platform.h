@@ -1,23 +1,29 @@
 #include "../player/objects_player.h" // This object interacts with the player.
 
-#ifndef OBJECTS_CRYSTALS_H
-#define OBJECTS_CRYSTALS_H
+#ifndef OBJECTS_PLATFORM_H
+#define OBJECTS_PLATFORM_H
 
 
+typedef struct{
+    int TargetX;
+    int TargetY;
+    int StartX;
+    int StartY;
+    bool MoveX;
+    bool MoveY;
+    int MaxSpeed;
+} Object16_Platform_MoveCode;
 /*
-    Crystal Object, collectable. Interacts with player and does support sprite animation.
+    Platform object.
 */
-class Object16_Crystal {
+class Object16_Platform {
     public:
         //Position of the Object16.
-        struct{
-            int X, Y; //Coordinates.
-            int sX, sY; //Screen coordinates.
-        } Position;
+        Object_Position Position;
+        
+        Object16_Platform_MoveCode MoveCode;
 
         int ID; // Sprite ID.
-        bool Collected; // If crystal was collected.
-        Object16_Insider_AnimationConfig AnimationHandler; // Animation handler... it's best to not mess with this.
 
 
         /*
@@ -27,7 +33,7 @@ class Object16_Crystal {
             @param x X coordinate of the Object16.
             @param Y Y coordinate of the Object16.
         */
-        void Create(int id, int x, int y);
+        void Create(int id, int x, int y, int TargetX, int TargetY, int speed);
 
 
 
@@ -36,10 +42,8 @@ class Object16_Crystal {
         */
         static inline void CreateGfx(){
             LoadSpritePal(0, "engine/sprites/objects/palette", 1, 1);
-            LoadSpriteGfx(0, "engine/sprites/objects/crystal", 2, 2, 16, 16, true);
+            LoadSpriteGfx(0, "engine/sprites/objects/platform", 2, 2, 64, 32, true);
         }
-
-
 
         /*
             Update function... It updates screen coordinates, it checks for collision with player.

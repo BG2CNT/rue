@@ -2,7 +2,6 @@
 #include <nds.h>
 #include <filesystem.h>
 #include <nf_lib.h>
-#include "../objects/objects_player.h"
 
 
 
@@ -17,15 +16,19 @@ void LoadEffects(u8 selection){
 
     while(fgets(buffer, 150, file)) {
         int screen, layer, color;
+
+        sscanf(buffer, "RAIN:%d,%d", &UFX_Rain.current_screen, &UFX_Rain.current_layer);
+
         if(sscanf(buffer, "WINDOW_GLOW:%d,%d,%d", &screen, &layer, &color) == 3){
             UFX_GlowCreate(screen, layer, color);
         }
-        if(sscanf(buffer, "RAIN:%d,%d", &screen, &layer) == 2){
-            UFX_Rain.current_screen = screen;
-            UFX_Rain.current_layer = layer;
-        }
         if(sscanf(buffer, "WINDOW_ALPHA_EFFECT:%d", &layer) == 1){
             UFX_WindowAlpha2(layer);
+        }
+        if(sscanf(buffer, "NINE_CIRCLES_EFFECT:%d,%d", &screen, &layer) == 1){
+            UFX_NineEffect.Enabled = true;
+            UFX_NineEffect.Screen = screen;
+            UFX_NineEffect.Layer = layer;
         }
     }
     fclose(file);
@@ -40,6 +43,7 @@ void UFX_UpdateEffects(Object16_Player* Player){
         UFX_GlowVBL(0, layer);
     }
     UFX_RainVBL(true, Player->BgScroll.X, Player->BgScroll.Y);
+    UFX_NineVBL();
 }
 
 

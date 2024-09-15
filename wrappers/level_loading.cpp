@@ -4,95 +4,96 @@
 #include "../effects/effect_loading.h"
 #include <nf_lib.h>
 
-void FreeLevelData(levelinfodata* level_info){
-    free(level_info->cmaploc);
-    free(level_info->name);
-    free(level_info->description);
+void FreeLevelData(RUE_LevelInfo *LevelInfo){
+    free(LevelInfo->CMap.Location);
+    free(LevelInfo->Information.Name);
+    free(LevelInfo->Information.Description);
     for(u8 i = 0; i < 4; i ++){
-        free(level_info->bg_info[i].loc);
-        level_info->bg_info[i].width = 0;
-        level_info->bg_info[i].height = 0;
+        free(LevelInfo->BgInformation[i].Location);
+        LevelInfo->BgInformation[i].Width = 0;
+        LevelInfo->BgInformation[i].Height = 0;
     }
-    level_info->name = NULL;
-    level_info->cmaploc = NULL;
-    level_info->description = NULL;
+    LevelInfo->Information.Name = NULL;
+    LevelInfo->Information.Description = NULL;
+    LevelInfo->CMap.Location = NULL;
 }
 
 
-void LoadLevelData(u8 selection, levelinfodata* level_info){
+void LoadLevelData(u8 selection, RUE_LevelInfo *LevelInfo){
     char buffer[150];
 
-    // Allocate memory.
-    level_info->name = (char*) malloc(40);
-    level_info->cmaploc = (char*) malloc(150);
-    level_info->description = (char*) malloc(150);
-    for(u8 i = 0; i < 4; i ++) level_info->bg_info[i].loc = (char*) malloc(80); // Allocate memory for background location.
+    // AlLocationate memory.
+    LevelInfo->Information.Name = (char*) malloc(40);
+    LevelInfo->Information.Description = (char*) malloc(150);
+    LevelInfo->CMap.Location = (char*) malloc(150);
+    for(u8 i = 0; i < 4; i ++) LevelInfo->BgInformation[i].Location = (char*) malloc(80); // AlLocationate memory for background Location.
 
     // Open file.
-    sprintf(buffer, "levels/%d/info.d16i", selection); // Get file location.
+    sprintf(buffer, "levels/%d/info.d16i", selection); // Get file Location.
     FILE* file = fopen(buffer, "r"); // Open.
 
     while(fgets(buffer, 150, file)) {
-        sscanf(buffer, "NAME:%[^\n]", level_info->name);
-        sscanf(buffer, "NAME_COL:%d", &level_info->name_color);
-        sscanf(buffer, "PLAYER_POS:%dx%d", &level_info->player_x, &level_info->player_y);
-        sscanf(buffer, "CMAP_SIZE:%dx%d", &level_info->cmapwidth, &level_info->cmapheight);
-        sscanf(buffer, "CAMERA_BOUNDS_X:%dx%d", &level_info->camera_bounds_x[0], &level_info->camera_bounds_x[1]);
-        sscanf(buffer, "CAMERA_BOUNDS_Y:%dx%d", &level_info->camera_bounds_y[0], &level_info->camera_bounds_y[1]);
-        sscanf(buffer, "CMAP_LOC:%s", level_info->cmaploc);
+        sscanf(buffer, "NAME:%[^\n]", LevelInfo->Information.Name);
+        sscanf(buffer, "NAME_COL:%d", &LevelInfo->Information.NameColor);
+        sscanf(buffer, "PLAYER_POS:%dx%d", &LevelInfo->PlayerX, &LevelInfo->PlayerY);
+        sscanf(buffer, "CMAP_SIZE:%dx%d", &LevelInfo->CMap.Width, &LevelInfo->CMap.Height);
+        sscanf(buffer, "CAMERA_BOUNDS_X:%dx%d", &LevelInfo->CameraBoundsX[0], &LevelInfo->CameraBoundsX[1]);
+        sscanf(buffer, "CAMERA_BOUNDS_Y:%dx%d", &LevelInfo->CameraBoundsY[0], &LevelInfo->CameraBoundsY[1]);
+        sscanf(buffer, "CMAP_LOCATION:%s", LevelInfo->CMap.Location);
 
-        sscanf(buffer, "BG3:%s", level_info->bg_info[3].loc);
-        sscanf(buffer, "BG2:%s", level_info->bg_info[2].loc);
-        sscanf(buffer, "BG1:%s", level_info->bg_info[1].loc);
-        sscanf(buffer, "BG0:%s", level_info->bg_info[0].loc);
-        sscanf(buffer, "BG3_SIZE:%dx%d", &level_info->bg_info[3].width, &level_info->bg_info[3].height);
-        sscanf(buffer, "BG2_SIZE:%dx%d", &level_info->bg_info[2].width, &level_info->bg_info[2].height);
-        
-        sscanf(buffer, "BG1_SIZE:%dx%d", &level_info->bg_info[1].width, &level_info->bg_info[1].height);
-        sscanf(buffer, "BG0_SIZE:%dx%d", &level_info->bg_info[0].width, &level_info->bg_info[0].height);
+        sscanf(buffer, "BG3:%s", LevelInfo->BgInformation[3].Location);
+        sscanf(buffer, "BG2:%s", LevelInfo->BgInformation[2].Location);
+        sscanf(buffer, "BG1:%s", LevelInfo->BgInformation[1].Location);
+        sscanf(buffer, "BG0:%s", LevelInfo->BgInformation[0].Location);
+
+        sscanf(buffer, "BG3_SIZE:%dx%d", &LevelInfo->BgInformation[3].Width, &LevelInfo->BgInformation[3].Height);
+        sscanf(buffer, "BG2_SIZE:%dx%d", &LevelInfo->BgInformation[2].Width, &LevelInfo->BgInformation[2].Height);
+        sscanf(buffer, "BG1_SIZE:%dx%d", &LevelInfo->BgInformation[1].Width, &LevelInfo->BgInformation[1].Height);
+        sscanf(buffer, "BG0_SIZE:%dx%d", &LevelInfo->BgInformation[0].Width, &LevelInfo->BgInformation[0].Height);
 
         // Description (last because slowest).
-        while(1){
-            char* newline;
-            newline = strchr(buffer, '|');
-            if(newline == NULL) break;
-            *newline = 10;
+        if(sscanf(buffer, "DESC:%[^\n]", LevelInfo->Information.Description)== 1){
+            while(1){
+                char* newline;
+                newline = strchr(LevelInfo->Information.Description, '|');
+                if(newline == NULL) break;
+                *newline = 10;
+            }
         }
-        sscanf(buffer, "DESC:%[^\n]", level_info->description);
     }
     fclose(file);
     // Load effects.
     LoadEffects(selection);
 }
 
-void Level_CreateBackgrounds(levelinfodata* level_info){
-    if(strcmp("NULL", level_info->bg_info[0].loc) != 0){
-        NF_LoadTiledBg(level_info->bg_info[0].loc, "bg0",
-                        level_info->bg_info[0].width, level_info->bg_info[0].height);
+void Level_CreateBackgrounds(RUE_LevelInfo *LevelInfo){
+    if(strcmp("NULL", LevelInfo->BgInformation[0].Location) != 0){
+        NF_LoadTiledBg(LevelInfo->BgInformation[0].Location, "bg0",
+                        LevelInfo->BgInformation[0].Width, LevelInfo->BgInformation[0].Height);
 
         NF_CreateTiledBg(0, 0, "bg0");
     }
-    if(strcmp("NULL", level_info->bg_info[1].loc) != 0){
-        NF_LoadTiledBg(level_info->bg_info[1].loc, "bg1",
-                        level_info->bg_info[1].width, level_info->bg_info[1].height);
+    if(strcmp("NULL", LevelInfo->BgInformation[1].Location) != 0){
+        NF_LoadTiledBg(LevelInfo->BgInformation[1].Location, "bg1",
+                        LevelInfo->BgInformation[1].Width, LevelInfo->BgInformation[1].Height);
 
         NF_CreateTiledBg(0, 1, "bg1");
     }
-    if(strcmp("NULL", level_info->bg_info[2].loc) != 0){
-        NF_LoadTiledBg(level_info->bg_info[2].loc, "bg2",
-                        level_info->bg_info[2].width, level_info->bg_info[2].height);
+    if(strcmp("NULL", LevelInfo->BgInformation[2].Location) != 0){
+        NF_LoadTiledBg(LevelInfo->BgInformation[2].Location, "bg2",
+                        LevelInfo->BgInformation[2].Width, LevelInfo->BgInformation[2].Height);
 
         NF_CreateTiledBg(0, 2, "bg2");
     }
-    if(strcmp("NULL", level_info->bg_info[3].loc) != 0){
-        NF_LoadTiledBg(level_info->bg_info[3].loc, "bg3",
-                        level_info->bg_info[3].width, level_info->bg_info[3].height);
+    if(strcmp("NULL", LevelInfo->BgInformation[3].Location) != 0){
+        NF_LoadTiledBg(LevelInfo->BgInformation[3].Location, "bg3",
+                        LevelInfo->BgInformation[3].Width, LevelInfo->BgInformation[3].Height);
 
         NF_CreateTiledBg(0, 3, "bg3");
     }
 
     // Create main collision map.
-    NF_LoadCollisionBg(level_info->cmaploc, 0, level_info->cmapwidth, level_info->cmapheight);
+    NF_LoadCollisionBg(LevelInfo->CMap.Location, 0, LevelInfo->CMap.Width, LevelInfo->CMap.Height);
 }
 
 
@@ -100,10 +101,10 @@ void Level_CreateBackgrounds(levelinfodata* level_info){
 // Wrappers to facilitate usage
 ////////////////////////////////
 
-void Level_ApplyCameraBoundaries(int* X, int* Y, levelinfodata* level){
-    if(*X < level->camera_bounds_x[0]) *X = level->camera_bounds_x[0];
-    else if(*X > level->camera_bounds_x[1]) *X = level->camera_bounds_x[1];
+void Level_ApplyCameraBoundaries(int* X, int* Y, RUE_LevelInfo *LevelInfo){
+    if(*X < LevelInfo->CameraBoundsX[0]) *X = LevelInfo->CameraBoundsX[0];
+    else if(*X > LevelInfo->CameraBoundsX[1]) *X = LevelInfo->CameraBoundsX[1];
 
-    if(*Y < level->camera_bounds_y[0]) *Y = level->camera_bounds_y[0];
-    else if(*Y > level->camera_bounds_y[1]) *Y = level->camera_bounds_y[1];
+    if(*Y < LevelInfo->CameraBoundsY[0]) *Y = LevelInfo->CameraBoundsY[0];
+    else if(*Y > LevelInfo->CameraBoundsY[1]) *Y = LevelInfo->CameraBoundsY[1];
 }

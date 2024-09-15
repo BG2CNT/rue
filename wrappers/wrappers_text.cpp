@@ -46,7 +46,7 @@ void Colored_Text(u8 screen, u8 layer, u16 x, u16 y, const char* text, bool vbl)
 void TypeWriterEffect(int screen, u32 layer, u32 x, u32 y, const char* string){
     u32 string_size = strlen(string) << 8;
 
-    for(u32 i = 0; i < string_size + 1;  i += 128){
+    for(u32 i = 0; i < string_size + 256;  i += 128){
         BoxText(screen, layer, x, y, string, 0, i >> 8);
         NF_UpdateTextLayers();
         swiWaitForVBlank();

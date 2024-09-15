@@ -9,6 +9,7 @@ void Object16_Crystal::Create(int id, int x, int y){
     ID = id;
     Collected = false;
 
+
     NF_CreateSprite(0, id, 2, 1, -64, 0); // Create sprite.
     SpriteStartAnim(2, 0, 3, 48, &AnimationHandler);
 }
